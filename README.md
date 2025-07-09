@@ -1,12 +1,13 @@
 # Website Tebak Role
 
-Yang dimana akan menebak role user ketika user menginput nama/username dan sebuah foto.
+Sebuah website dimana akan menebak role user ketika user menginput nama/username dan sebuah foto.
+Website ini hanyalah untuk tujuan hiburan semata, kami tidak mengumpulkan apapun dari user.
 (Semua proses berjalan di browser user, kami tidak menerima satupun inputan data user)
 
 <!-- WHAT’S-NEW-START -->
 ## What’s New
 
-*( akan ter‑generate otomatis di sini )*
+
 <!-- WHAT’S-NEW-END -->
 
 ## Instalasi
