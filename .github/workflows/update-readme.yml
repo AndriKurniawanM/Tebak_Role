@@ -1,0 +1,32 @@
+name: Update What’s New in README
+
+on:
+  push:
+    branches:
+      - main      # atau branch apa pun yang kamu pakai
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # perlu depth full untuk git log
+
+      - name: Setup Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Generate What’s New
+        run: scripts/update-whats-new.sh
+
+      - name: Commit & Push changes
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
+          force: false
+          commit_message: "chore: update What’s New section in README"
