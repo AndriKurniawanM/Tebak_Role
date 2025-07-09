@@ -9,27 +9,28 @@ jobs:
   update-readme:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write  # ← penting agar bisa push
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Setup Git
+      - name: Setup Git identity
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Give execute permission to script
+      - name: Give permission to script
         run: chmod +x scripts/update-whats-new.sh
 
-      - name: Generate What’s New
+      - name: Run update script
         run: scripts/update-whats-new.sh
 
-      - name: Commit & Push changes
-        uses: ad-m/github-push-action@v0.6.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main
-          force: false
-          commit_message: "chore: update What’s New section in README"
+      - name: Commit and push changes
+        run: |
+          git add README.md
+          git commit -m "chore: update What's New section" || echo "No changes to commit"
+          git push
