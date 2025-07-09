@@ -1,79 +1,97 @@
-import {useState} from "react";
+import React, { useState } from 'react';
+import { RadarComponent } from './components/RadarComponent';
 
-type Scores = Record<"developer" | "designer" | "manager", number>;
+export default function App() {
+  const [step, setStep] = useState(1);
+  const [username, setUsername] = useState('');
+  const [file, setFile] = useState<File | null>(null);
+  const [result, setResult] = useState<{ role: string; radarData: { subject: string; A: number }[] } | null>(null);
 
-function calRole (sizeKB: number, w: number, h: number){
-  const scores: Scores = {developer:0, designer:0, manager:0};
-  if (sizeKB <50) scores.developer += 3;
-  else if (sizeKB < 200) scores.designer += 3;
-  else scores.manager += 3;
+  const calculateRole = (scores: Record<string, number>) =>
+    Object.entries(scores).map(([subject, A]) => ({ subject, A }));
 
-  const mp = (w*h)/1_000_000;
-  if (mp < 1) scores.developer += 2;
-  else if (mp < 3) scores.designer += 2;
-  else scores.manager += 2;
-
-  const role = (Object.keys(scores) as (keyof Scores) [])
-    .reduce((best,key)=> scores[key] > scores[best] ? key : best, "developer");
-  return { role, scores };
-}
-
-export default function App(){
-  const [username, setUsername] = useState("");
-  const [file, setFile]         = useState<File|null>(null);
-  const [result, setResult]     = useState<{role:String;scores:Scores}|null>(null);
-
-  const handleFile = (f:File) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const img = new Image();
-      img.onload = () => {
-        const sizeKB = f.size/1024;
-        setResult(calRole(sizeKB, img.width, img.height));
-      };
-      img.src = reader.result as string;
-    };
-    reader.readAsDataURL(f);
+  const onStart = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (username) setStep(2);
   };
 
-   const onSubmit = (e: React.FormEvent) => {
+  const onUpload = (e: React.FormEvent) => {
     e.preventDefault();
-    if (file) handleFile(file);
-   };
-   
-   if (result){
-    return (
-      <div className ="p-6 text-center">
-        <h1 className ="text-2xl"> Halo, {username}!</h1>
-        <p className="mt-4"> Role-mu adalah <strong> {result.role}</strong>.</p>
-        <pre className="mt-2">{JSON.stringify(result.scores, null,2)}</pre>
+    if (file) {
+      // Real calculation placeholder
+      const fakeScores = { Sepuh: 4, Pemula: 2, Rasis: 3 };
+      const radarData = calculateRole(fakeScores);
+      setResult({ role: 'Sepuh', radarData });
+      setStep(3);
+    }
+  };
+
+  return (
+    <main className="min-h-screen flex items-center justify-center p-6">
+      <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-3xl shadow-lg overflow-hidden">
+        {step === 1 && (
+          <div className="p-8">
+            <h1 className="text-2xl font-bold text-center text-purple-700 mb-6">Apa Role Kamu?</h1>
+            <form onSubmit={onStart} className="space-y-4">
+              <input
+                type="text"
+                placeholder="Masukkan nama"
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-300"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+              <button
+                type="submit"
+                className="w-full py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+              >
+                Mulai
+              </button>
+            </form>
+          </div>
+        )}
+
+        {step === 2 && (
+          <div className="p-8">
+            <h2 className="text-xl font-semibold text-center mb-4 text-gray-700">Upload Foto Kamu</h2>
+            <form onSubmit={onUpload} className="space-y-4">
+              <input
+                type="file"
+                accept="image/*"
+                className="w-full"
+                onChange={(e) => setFile(e.target.files?.[0] || null)}
+              />
+              <button
+                type="submit"
+                className="w-full py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+              >
+                Hitung Role
+              </button>
+            </form>
+          </div>
+        )}
+
+        {step === 3 && result && (
+          <div className="p-6 text-center">
+            <h1 className="text-2xl font-bold text-purple-700 mb-2">Halo, {username}!</h1>
+            <p className="text-lg mb-4">
+              Role-mu adalah <span className="text-purple-600">{result.role}</span>
+            </p>
+            <div className="w-full h-64 p-4">
+              <RadarComponent data={result.radarData} />
+            </div>
+            <button
+              onClick={() => {
+                setStep(1);
+                setFile(null);
+                setResult(null);
+              }}
+              className="mt-4 w-full py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
+            >
+              Coba Lagi
+            </button>
+          </div>
+        )}
       </div>
-    );
-   }
-   return ( 
-    <form onSubmit={onSubmit} className="p-6 max-w-md mx-auto space-y-4">
-      <div>
-        <label> Nama: </label>
-        <input
-          type="text" required
-          className="border p-2 w-full"
-          value={username}
-          onChange={e=>setUsername(e.target.value)}
-          />
-      </div>
-      <div>
-        <label> Upload Foto:</label>
-        <input
-        type="file" accept="image/*" required
-        onChange={e=> e.target.files&&setFile(e.target.files[0])}
-        />
-      </div>
-      <button
-        type="submit"
-        className="bg-blue-500 text-white px-4 py-2 rounded"
-        >
-          Hitung Role
-        </button>
-    </form>
-   );
+    </main>
+  );
 }
