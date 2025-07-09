@@ -3,7 +3,7 @@ name: Update What’s New in README
 on:
   push:
     branches:
-      - main      # atau branch apa pun yang kamu pakai
+      - main
 
 jobs:
   update-readme:
@@ -13,12 +13,15 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # perlu depth full untuk git log
+          fetch-depth: 0
 
       - name: Setup Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Give execute permission to script
+        run: chmod +x scripts/update-whats-new.sh
 
       - name: Generate What’s New
         run: scripts/update-whats-new.sh
