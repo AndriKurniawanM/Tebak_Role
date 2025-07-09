@@ -6,8 +6,12 @@ Website ini hanyalah untuk tujuan hiburan semata, kami tidak mengumpulkan apapun
 
 <!-- WHAT’S-NEW-START -->
 ## What’s New
--Add radar 
 
+- Menambahkan UI (2025-07-09)
+- Update README.md (2025-07-09)
+- Menambahkan radar (2025-07-09)
+- Update update-readme.yml (2025-07-09)
+- Update update-readme.yml (2025-07-09)
 <!-- WHAT’S-NEW-END -->
 
 ## Instalasi
