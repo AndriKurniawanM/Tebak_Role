@@ -1,0 +1,36 @@
+name: Update What’s New in README
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write  # ← penting agar bisa push
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Give permission to script
+        run: chmod +x scripts/update-whats-new.sh
+
+      - name: Run update script
+        run: scripts/update-whats-new.sh
+
+      - name: Commit and push changes
+        run: |
+          git add README.md
+          git commit -m "chore: update What's New section" || echo "No changes to commit"
+          git push
